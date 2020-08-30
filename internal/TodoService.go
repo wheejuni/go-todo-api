@@ -1,8 +1,18 @@
-package internal
+package TodoService
 
 import "./models"
 
 var todoItems []*models.TodoItem
+
+func GetTodo(id int) *models.TodoItem {
+	for _, element := range todoItems {
+		if element.Id == id {
+			return element
+		}
+		continue
+	}
+	return new(models.TodoItem)
+}
 
 func AddTodo(title string) {
 	todoItem := new(models.TodoItem)
@@ -14,6 +24,16 @@ func AddTodo(title string) {
 	todoItems = append(todoItems, todoItem)
 }
 
-func SetAsDone(itemNumber int) {
+func DeleteTodo(itemNumber int) *models.TodoItem {
+	return nil
+}
 
+func SetAsDone(itemNumber int) {
+	for _, element := range todoItems {
+		if element.Id == itemNumber {
+			element.Done = true
+			return
+		}
+		continue
+	}
 }

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"../../internal"
+	"strconv"
 )
 
 func main() {
@@ -17,6 +20,14 @@ func main() {
 	router.HandleFunc("/hello/{name}", func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
 		fmt.Fprintf(writer, "%s야, 반갑다. 즐거운 코딩 생활 되길 바란다.", vars["name"])
+	})
+
+	router.HandleFunc("/todo/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		idString := mux.Vars(request)["id"]
+		id, _ := strconv.Atoi(idString)
+
+		todoItem := TodoService.GetTodo(id)
+		json.NewEncoder(writer).Encode(todoItem)
 	})
 
 	router.Handle("/static/", http.StripPrefix("/static/", fs))
