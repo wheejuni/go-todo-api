@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"../../internal"
+	"../../internal/models"
 	"strconv"
 )
 
@@ -28,6 +31,21 @@ func main() {
 
 		todoItem := TodoService.GetTodo(id)
 		json.NewEncoder(writer).Encode(todoItem)
+	})
+
+	router.HandleFunc("/todo/new", func(writer http.ResponseWriter, request *http.Request) {
+		bodyLength := request.ContentLength
+		body := make([]byte, bodyLength)
+		requestItem := new(models.NewTodoItem)
+
+		request.Body.Read(body)
+		err := json.NewDecoder(bytes.NewReader(body)).Decode(&requestItem)
+
+		if err != nil {
+			log.Panic()
+		}
+
+		TodoService.AddTodo(requestItem)
 	})
 
 	router.Handle("/static/", http.StripPrefix("/static/", fs))
