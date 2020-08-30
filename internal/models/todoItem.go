@@ -10,8 +10,10 @@ type NewTodoItem struct {
 	Title string
 }
 
-func (n *NewTodoItem) toTodoItemModel() TodoItem {
-	return TodoItem{
-		Title: n.Title,
-		Done: false}
+func (n NewTodoItem) TodoItemModel() *TodoItem {
+	generatedItem := new(TodoItem)
+	generatedItem.Title = n.Title
+	generatedItem.Done = false
+
+	return generatedItem
 }

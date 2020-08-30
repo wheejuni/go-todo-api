@@ -14,14 +14,11 @@ func GetTodo(id int) *models.TodoItem {
 	return new(models.TodoItem)
 }
 
-func AddTodo(title string) {
-	todoItem := new(models.TodoItem)
+func AddTodo(todoItem *models.NewTodoItem) {
+	generatedItem := todoItem.TodoItemModel()
+	generatedItem.Id = len(todoItems) - 1
 
-	todoItem.Id = len(todoItems)
-	todoItem.Done = false
-	todoItem.Title = title
-
-	todoItems = append(todoItems, todoItem)
+	todoItems = append(todoItems, generatedItem)
 }
 
 func DeleteTodo(itemNumber int) *models.TodoItem {
