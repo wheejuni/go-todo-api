@@ -12,7 +12,6 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	fs := http.FileServer(http.Dir("../../web/static/"))
 
 	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintf(writer, "이것은 고랑 기반 서버이다. 당신의 요청 정보: %s", request.URL.Path)
@@ -27,13 +26,14 @@ func main() {
 		idString := mux.Vars(request)["id"]
 		id, _ := strconv.Atoi(idString)
 
-		fmt.Print(id)
+		fmt.Print("hello")
 
 		todoItem := TodoService.GetTodo(id)
 		json.NewEncoder(writer).Encode(todoItem)
 	})
 
-	router.HandleFunc("/todo/new", func(writer http.ResponseWriter, request *http.Request) {
+	router.HandleFunc("/newitem", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Print("hello new")
 		decoder := json.NewDecoder(request.Body)
 		var requestItem models.NewTodoItem
 
@@ -44,11 +44,12 @@ func main() {
 		}
 
 		fmt.Print(requestItem)
-
 		TodoService.AddTodo(&requestItem)
 	}).Methods("POST")
 
-	router.Handle("/static/", http.StripPrefix("/static/", fs))
+	router.
+		PathPrefix("/static").
+		Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./web/static"))))
 
 	http.ListenAndServe(":8081", router)
 }
