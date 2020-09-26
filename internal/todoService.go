@@ -1,6 +1,8 @@
 package TodoService
 
-import "./models"
+import (
+	"./models"
+)
 
 var todoItems []*models.TodoItem
 
@@ -14,11 +16,18 @@ func GetTodo(id int) *models.TodoItem {
 	return new(models.TodoItem)
 }
 
-func AddTodo(todoItem *models.NewTodoItem) {
+func AddTodo(todoItem *models.NewTodoItem) *models.TodoItem {
+	lastIndex := len(todoItems)
+
 	generatedItem := todoItem.TodoItemModel()
-	generatedItem.Id = len(todoItems) - 1
+	generatedItem.Id = 1
+
+	if lastIndex > 1 {
+		generatedItem.Id = lastIndex
+	}
 
 	todoItems = append(todoItems, generatedItem)
+	return todoItems[generatedItem.Id - 1]
 }
 
 func DeleteTodo(itemNumber int) *models.TodoItem {
