@@ -1,20 +1,18 @@
 package main
 
 import (
-	"bytes"
+	"../../internal"
+	"../../internal/models"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
-	"../../internal"
-	"../../internal/models"
 	"strconv"
 )
 
 func main() {
 	router := mux.NewRouter()
-	fs := http.FileServer(http.Dir("web/static/"))
+	fs := http.FileServer(http.Dir("../../web/static/"))
 
 	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintf(writer, "이것은 고랑 기반 서버이다. 당신의 요청 정보: %s", request.URL.Path)
@@ -29,24 +27,26 @@ func main() {
 		idString := mux.Vars(request)["id"]
 		id, _ := strconv.Atoi(idString)
 
+		fmt.Print(id)
+
 		todoItem := TodoService.GetTodo(id)
 		json.NewEncoder(writer).Encode(todoItem)
 	})
 
 	router.HandleFunc("/todo/new", func(writer http.ResponseWriter, request *http.Request) {
-		bodyLength := request.ContentLength
-		body := make([]byte, bodyLength)
-		requestItem := new(models.NewTodoItem)
+		decoder := json.NewDecoder(request.Body)
+		var requestItem models.NewTodoItem
 
-		request.Body.Read(body)
-		err := json.NewDecoder(bytes.NewReader(body)).Decode(&requestItem)
+		err := decoder.Decode(&requestItem)
 
 		if err != nil {
-			log.Panic()
+			panic(err)
 		}
 
-		TodoService.AddTodo(requestItem)
-	})
+		fmt.Print(requestItem)
+
+		TodoService.AddTodo(&requestItem)
+	}).Methods("POST")
 
 	router.Handle("/static/", http.StripPrefix("/static/", fs))
 

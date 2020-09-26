@@ -7,7 +7,7 @@ type TodoItem struct {
 }
 
 type NewTodoItem struct {
-	Title string
+	Title string `json:"title"`
 }
 
 func (n NewTodoItem) TodoItemModel() *TodoItem {
@@ -16,4 +16,8 @@ func (n NewTodoItem) TodoItemModel() *TodoItem {
 	generatedItem.Done = false
 
 	return generatedItem
+}
+
+func (item TodoItem) SetAsCompleted() {
+	item.Done = true
 }
